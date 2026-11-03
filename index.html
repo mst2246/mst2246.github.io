@@ -10,60 +10,95 @@
             box-sizing: border-box
         }
 
+        html,
         body {
             margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden
+        }
+
+        body {
             background: #111318;
             color: #f5f5f5;
             font-family: system-ui, sans-serif;
-            padding: 14px
+            display: flex;
+            flex-direction: column
+        }
+
+        header {
+            flex: none;
+            padding: 8px 12px;
+            background: #151921;
+            border-bottom: 1px solid #39404b
+        }
+
+        .header-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap
         }
 
         h1 {
-            font-size: 19px;
-            margin: 0 0 8px
-        }
-
-        p {
-            font-size: 13px;
-            color: #bbb;
-            line-height: 1.5
-        }
-
-        .panel {
-            background: #20242c;
-            border-radius: 12px;
-            padding: 12px;
-            margin: 12px 0
-        }
-
-        input[type=text] {
-            width: 100%;
-            background: #111318;
-            border: 1px solid #5b6470;
-            color: white;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 14px
+            font-size: 15px;
+            margin: 0
         }
 
         button {
             border: 0;
-            border-radius: 8px;
-            padding: 10px 13px;
+            border-radius: 7px;
+            padding: 8px 10px;
             background: #d63c3c;
             color: white;
             font-weight: 600;
-            margin: 8px 5px 0 0
+            font-size: 12px;
+            cursor: pointer
         }
 
         button.secondary {
             background: #475466
         }
 
+        #message {
+            font-size: 11px;
+            color: #aeb6c4;
+            margin: 5px 0 0
+        }
+
+        #panels {
+            display: grid;
+            grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+            flex: 1;
+            min-height: 0;
+            gap: 6px;
+            padding: 6px
+        }
+
+        .panel {
+            min-width: 0;
+            min-height: 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            background: #20242c;
+            border-radius: 10px;
+            padding: 10px
+        }
+
+        .panel-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin: 0 0 7px
+        }
+
         .video {
             aspect-ratio: 16/9;
+            min-height: 200px;
             background: black;
-            margin-top: 10px
+            width: 100%;
+            margin-bottom: 8px
         }
 
         .video iframe {
@@ -76,43 +111,76 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            flex-wrap: wrap
+            flex-wrap: wrap;
+            margin: 0 0 9px
         }
 
         input[type=range] {
-            width: 110px
+            width: min(170px, 55%);
+            accent-color: #e44d4d
+        }
+
+        .url-row {
+            display: flex;
+            gap: 6px;
+            align-items: center
+        }
+
+        input[type=text] {
+            min-width: 0;
+            flex: 1;
+            background: #111318;
+            border: 1px solid #5b6470;
+            color: white;
+            border-radius: 7px;
+            padding: 9px;
+            font-size: 13px
         }
 
         .status {
-            font-size: 12px;
-            color: #aaa
+            font-size: 11px;
+            color: #b8beca;
+            margin: 7px 0
         }
 
         label {
-            font-size: 13px
+            font-size: 12px
+        }
+
+        @media (orientation:landscape) {
+            #panels {
+                grid-template-rows: minmax(0, 1fr);
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)
+            }
+
+            .video {
+                min-height: 200px
+            }
         }
     </style>
 </head>
 
 <body>
-    <h1>YouTube 2画面再生テスト</h1>
-    <p>動画URLを入力して「読み込む」を押してください。音声付き同時再生が可能かPixel 7で試すための実験ページです。</p>
-    <div id="panels"></div>
-    <div class="panel"><button id="both">2本とも再生</button><button class="secondary" id="stop">2本とも停止</button>
-        <p id="message" class="status">動画を読み込んでください。</p>
-    </div>
+    <header>
+        <div class="header-line">
+            <h1>YouTube Multi Player</h1>
+            <div><button id="both">2本とも再生</button> <button class="secondary" id="stop">2本とも停止</button></div>
+        </div>
+        <p id="message">動画を読み込んでください。</p>
+    </header>
+    <main id="panels"></main>
     <script>
         const players = [null, null], ready = [false, false];
-        function videoId(value) {try {const u = new URL(value); const host = u.hostname.toLowerCase(); if (host === 'youtu.be' || host === 'www.youtu.be') return u.pathname.split('/')[1] || ''; if (['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'www.youtube-nocookie.com'].includes(host)) {if (u.pathname === '/watch') return u.searchParams.get('v') || ''; const m = u.pathname.match(/^\/(?:shorts|live|embed)\/([^/]+)/); return m?.[1] || ''} } catch (e) { } return /^[\w-]{11}$/.test(value) ? value : ''}
+        function videoId(value) { try { const u = new URL(value); const host = u.hostname.toLowerCase(); if (host === 'youtu.be' || host === 'www.youtu.be') return u.pathname.split('/')[1] || ''; if (['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'www.youtube-nocookie.com'].includes(host)) { if (u.pathname === '/watch') return u.searchParams.get('v') || ''; const m = u.pathname.match(/^\/(?:shorts|live|embed)\/([^/]+)/); return m?.[1] || '' } } catch (e) { } return /^[\w-]{11}$/.test(value) ? value : '' }
         const root = document.getElementById('panels');
-        for (let i = 0; i < 2; i++) {const section = document.createElement('section'); section.className = 'panel'; section.innerHTML = `<label for="url${i}">動画 ${i + 1} のURL</label><input id="url${i}" type="text" placeholder="https://www.youtube.com/watch?v=..."/><button id="load${i}">読み込む</button><div class="video"><div id="player${i}" style="height:100%"></div></div><div class="controls"><button id="play${i}" class="secondary">再生</button><button id="pause${i}" class="secondary">停止</button><label for="volume${i}">音量</label><input id="volume${i}" type="range" min="0" max="100" value="${i === 0 ? 70 : 30}"><span id="vlabel${i}">${i === 0 ? 70 : 30}%</span></div><p class="status" id="status${i}">未読み込み</p>`; root.append(section)}
-        function status(i, msg) {document.getElementById('status' + i).textContent = msg}
-        function message(msg) {document.getElementById('message').textContent = msg}
-        window.onYouTubeIframeAPIReady = () => {message('YouTube API準備完了。URLを入力してください。')};
+        for (let i = 0; i < 2; i++) { const section = document.createElement('section'); section.className = 'panel'; section.innerHTML = `<h2 class="panel-title">動画 ${i + 1}</h2><div class="video"><div id="player${i}" style="height:100%"></div></div><div class="controls"><label for="volume${i}">音量</label><input id="volume${i}" type="range" min="0" max="100" value="${i === 0 ? 70 : 30}"><span id="vlabel${i}">${i === 0 ? 70 : 30}%</span></div><div class="url-row"><input id="url${i}" type="text" aria-label="動画 ${i + 1} のURL" placeholder="YouTube URL / 動画ID"/><button id="load${i}">読み込む</button></div><p class="status" id="status${i}">未読み込み</p>`; root.append(section) }
+        function status(i, msg) { document.getElementById('status' + i).textContent = msg }
+        function message(msg) { document.getElementById('message').textContent = msg }
+        window.onYouTubeIframeAPIReady = () => { message('YouTube API準備完了。URLを入力してください。') };
         const script = document.createElement('script'); script.src = 'https://www.youtube.com/iframe_api'; document.head.append(script);
-        function load(i) {const id = videoId(document.getElementById('url' + i).value.trim()); if (!/^[\w-]{11}$/.test(id)) {status(i, '正しいYouTube URLまたは動画IDを入力してください。'); return } if (!window.YT?.Player) {status(i, 'YouTube APIを読み込み中です。少し待って再試行してください。'); return } if (players[i]) {players[i].destroy(); players[i] = null} ready[i] = false; const holder = document.createElement('div'); holder.id = 'player' + i; holder.style.height = '100%'; document.querySelectorAll('.video')[i].replaceChildren(holder); status(i, '読み込み中...'); players[i] = new YT.Player(holder.id, {height: '100%', width: '100%', videoId: id, playerVars: {playsinline: 1, rel: 0}, events: {onReady: e => {ready[i] = true; e.target.setVolume(Number(document.getElementById('volume' + i).value)); status(i, '準備完了。再生できます。')}, onError: e => status(i, '再生エラー: ' + e.data + '（埋め込み不可の動画の可能性があります）'), onStateChange: e => {if (e.data === YT.PlayerState.PLAYING) status(i, '再生中'); if (e.data === YT.PlayerState.PAUSED) status(i, '一時停止')}}})}
-        for (let i = 0; i < 2; i++) {document.getElementById('load' + i).onclick = () => load(i); document.getElementById('play' + i).onclick = () => {if (ready[i]) players[i].playVideo()}; document.getElementById('pause' + i).onclick = () => {if (ready[i]) players[i].pauseVideo()}; document.getElementById('volume' + i).oninput = e => {document.getElementById('vlabel' + i).textContent = e.target.value + '%'; if (ready[i]) players[i].setVolume(Number(e.target.value))}}
-        document.getElementById('both').onclick = () => {for (let i = 0; i < 2; i++)if (ready[i]) players[i].playVideo(); message('両方に再生命令を送信しました。片方が止まるか確認してください。')}; document.getElementById('stop').onclick = () => {for (let i = 0; i < 2; i++)if (ready[i]) players[i].pauseVideo(); message('停止しました。')};
+        function load(i) { const id = videoId(document.getElementById('url' + i).value.trim()); if (!/^[\w-]{11}$/.test(id)) { status(i, '正しいYouTube URLまたは動画IDを入力してください。'); return } if (!window.YT?.Player) { status(i, 'YouTube APIを読み込み中です。少し待って再試行してください。'); return } if (players[i]) { players[i].destroy(); players[i] = null } ready[i] = false; const holder = document.createElement('div'); holder.id = 'player' + i; holder.style.height = '100%'; document.querySelectorAll('.video')[i].replaceChildren(holder); status(i, '読み込み中...'); players[i] = new YT.Player(holder.id, { height: '100%', width: '100%', videoId: id, playerVars: { playsinline: 1, rel: 0 }, events: { onReady: e => { ready[i] = true; e.target.setVolume(Number(document.getElementById('volume' + i).value)); status(i, '準備完了。再生できます。') }, onError: e => status(i, '再生エラー: ' + e.data + '（埋め込み不可の動画の可能性があります）'), onStateChange: e => { if (e.data === YT.PlayerState.PLAYING) status(i, '再生中'); if (e.data === YT.PlayerState.PAUSED) status(i, '一時停止') } } }) }
+        for (let i = 0; i < 2; i++) { document.getElementById('load' + i).onclick = () => load(i); document.getElementById('volume' + i).oninput = e => { document.getElementById('vlabel' + i).textContent = e.target.value + '%'; if (ready[i]) players[i].setVolume(Number(e.target.value)) } }
+        document.getElementById('both').onclick = () => { for (let i = 0; i < 2; i++)if (ready[i]) players[i].playVideo(); message('両方に再生命令を送信しました。片方が止まるか確認してください。') }; document.getElementById('stop').onclick = () => { for (let i = 0; i < 2; i++)if (ready[i]) players[i].pauseVideo(); message('停止しました。') };
     </script>
 </body>
 
