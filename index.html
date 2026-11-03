@@ -132,9 +132,9 @@
             }
         }
 
-        /* Android split-screen: compact viewport, one vertically scrollable video panel at a time. */
+        /* Compact viewport: portrait uses height; landscape uses width to avoid triggering on normal landscape phones. */
         @media (orientation:portrait) and (max-height:780px),
-        (orientation:landscape) and (max-height:480px) {
+        (orientation:landscape) and (max-width:650px) {
 
             html,
             body {
