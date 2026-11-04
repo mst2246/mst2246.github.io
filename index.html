@@ -2,196 +2,201 @@
 <html lang="ja">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>YouTube Multi Player</title>
-    <style>
-        * {
-            box-sizing: border-box
-        }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>YouTube Multi Player</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#111318">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" href="./icons/icon-192.png">
+  <style>
+    * {
+      box-sizing: border-box
+    }
 
-        html,
-        body {
-            margin: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden
-        }
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden
+    }
 
-        body {
-            background: #111318;
-            color: #f5f5f5;
-            font-family: system-ui, sans-serif;
-            display: flex;
-            flex-direction: column
-        }
+    body {
+      background: #111318;
+      color: #f5f5f5;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      flex-direction: column
+    }
 
-        button {
-            border: 0;
-            border-radius: 7px;
-            padding: 8px 10px;
-            background: #d63c3c;
-            color: white;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer
-        }
+    button {
+      border: 0;
+      border-radius: 7px;
+      padding: 8px 10px;
+      background: #d63c3c;
+      color: white;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer
+    }
 
-        button.secondary {
-            background: #475466
-        }
+    button.secondary {
+      background: #475466
+    }
 
-        #panels {
-            display: grid;
-            grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
-            flex: 1;
-            min-height: 0;
-            gap: 6px;
-            padding: 6px
-        }
+    #panels {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+      flex: 1;
+      min-height: 0;
+      gap: 6px;
+      padding: 6px
+    }
 
-        .panel {
-            min-width: 0;
-            min-height: 0;
-            overflow-y: auto;
-            overscroll-behavior: contain;
-            -webkit-overflow-scrolling: touch;
-            background: #20242c;
-            border-radius: 10px;
-            padding: 10px
-        }
+    .panel {
+      min-width: 0;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      background: #20242c;
+      border-radius: 10px;
+      padding: 10px
+    }
 
-        .panel-title {
-            font-size: 13px;
-            font-weight: 700;
-            margin: 0 0 7px
-        }
+    .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin: 0 0 7px
+    }
 
-        .video {
-            aspect-ratio: 16/9;
-            min-height: 200px;
-            background: black;
-            width: 100%;
-            margin-bottom: 8px
-        }
+    .video {
+      aspect-ratio: 16/9;
+      min-height: 200px;
+      background: black;
+      width: 100%;
+      margin-bottom: 8px
+    }
 
-        .video iframe {
-            width: 100%;
-            height: 100%;
-            border: 0
-        }
+    .video iframe {
+      width: 100%;
+      height: 100%;
+      border: 0
+    }
 
-        .controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin: 0 0 9px
-        }
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 0 0 9px
+    }
 
-        input[type=range] {
-            width: min(170px, 55%);
-            accent-color: #e44d4d
-        }
+    input[type=range] {
+      width: min(170px, 55%);
+      accent-color: #e44d4d
+    }
 
-        .url-row {
-            display: flex;
-            gap: 6px;
-            align-items: center
-        }
+    .url-row {
+      display: flex;
+      gap: 6px;
+      align-items: center
+    }
 
-        .url-row {
-            flex-wrap: wrap
-        }
+    .url-row {
+      flex-wrap: wrap
+    }
 
-        .url-row input {
-            flex-basis: 100%
-        }
+    .url-row input {
+      flex-basis: 100%
+    }
 
-        input[type=text] {
-            min-width: 0;
-            flex: 1;
-            background: #111318;
-            border: 1px solid #5b6470;
-            color: white;
-            border-radius: 7px;
-            padding: 9px;
-            font-size: 13px
-        }
+    input[type=text] {
+      min-width: 0;
+      flex: 1;
+      background: #111318;
+      border: 1px solid #5b6470;
+      color: white;
+      border-radius: 7px;
+      padding: 9px;
+      font-size: 13px
+    }
 
-        .status {
-            font-size: 11px;
-            color: #b8beca;
-            margin: 7px 0
-        }
+    .status {
+      font-size: 11px;
+      color: #b8beca;
+      margin: 7px 0
+    }
 
-        label {
-            font-size: 12px
-        }
+    label {
+      font-size: 12px
+    }
 
-        @media (orientation:landscape) {
-            #panels {
-                grid-template-rows: minmax(0, 1fr);
-                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)
-            }
+    @media (orientation:landscape) {
+      #panels {
+        grid-template-rows: minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)
+      }
 
-            .video {
-                min-height: 200px
-            }
-        }
+      .video {
+        min-height: 200px
+      }
+    }
 
-        /* Compact viewport: portrait uses height; landscape uses width to avoid triggering on normal landscape phones. */
-        @media (orientation:portrait) and (max-height:780px),
-        (orientation:landscape) and (max-width:650px) {
+    /* Compact viewport: portrait uses height; landscape uses width to avoid triggering on normal landscape phones. */
+    @media (orientation:portrait) and (max-height:780px),
+    (orientation:landscape) and (max-width:650px) {
 
-            html,
-            body {
-                height: 100%;
-                overflow: hidden
-            }
+      html,
+      body {
+        height: 100%;
+        overflow: hidden
+      }
 
-            #panels {
-                display: block;
-                overflow-y: auto;
-                overscroll-behavior: contain;
-                scroll-snap-type: y proximity;
-                height: 100dvh;
-                min-height: 0;
-                padding: 0;
-                gap: 0
-            }
+      #panels {
+        display: block;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scroll-snap-type: y proximity;
+        height: 100dvh;
+        min-height: 0;
+        padding: 0;
+        gap: 0
+      }
 
-            .panel {
-                height: 100dvh;
-                min-height: 0;
-                overflow-y: auto;
-                scroll-snap-align: start;
-                overscroll-behavior: auto;
-                border-radius: 0;
-                margin: 0;
-                padding: 8px
-            }
+      .panel {
+        height: 100dvh;
+        min-height: 0;
+        overflow-y: auto;
+        scroll-snap-align: start;
+        overscroll-behavior: auto;
+        border-radius: 0;
+        margin: 0;
+        padding: 8px
+      }
 
-            .video {
-                min-height: 200px
-            }
-        }
-    </style>
+      .video {
+        min-height: 200px
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <main id="panels"></main>
-    <script>
-        const players = [null, null], ready = [false, false];
-        function videoId(value) { try { const u = new URL(value); const host = u.hostname.toLowerCase(); if (host === 'youtu.be' || host === 'www.youtu.be') return u.pathname.split('/')[1] || ''; if (['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'www.youtube-nocookie.com'].includes(host)) { if (u.pathname === '/watch') return u.searchParams.get('v') || ''; const m = u.pathname.match(/^\/(?:shorts|live|embed)\/([^/]+)/); return m?.[1] || '' } } catch (e) { } return /^[\w-]{11}$/.test(value) ? value : '' }
-        const root = document.getElementById('panels');
-        for (let i = 0; i < 2; i++) { const section = document.createElement('section'); section.className = 'panel'; section.innerHTML = `<h2 class="panel-title">動画 ${i + 1}</h2><div class="video"><div id="player${i}" style="height:100%"></div></div><div class="controls"><label for="volume${i}">音量</label><input id="volume${i}" type="range" min="0" max="100" value="${i === 0 ? 70 : 30}"><span id="vlabel${i}">${i === 0 ? 70 : 30}%</span></div><div class="url-row"><input id="url${i}" type="text" aria-label="動画 ${i + 1} のURL" placeholder="YouTube URL / 動画ID"/><button id="load${i}">読み込む</button><button class="secondary" id="paste${i}">貼り付けて読み込む</button></div><p class="status" id="status${i}">未読み込み</p>`; root.append(section) }
-        function status(i, msg) { document.getElementById('status' + i).textContent = msg }
-        const script = document.createElement('script'); script.src = 'https://www.youtube.com/iframe_api'; document.head.append(script);
-        function load(i) { const id = videoId(document.getElementById('url' + i).value.trim()); if (!/^[\w-]{11}$/.test(id)) { status(i, '正しいYouTube URLまたは動画IDを入力してください。'); return } if (!window.YT?.Player) { status(i, 'YouTube APIを読み込み中です。少し待って再試行してください。'); return } if (players[i]) { players[i].destroy(); players[i] = null } ready[i] = false; const holder = document.createElement('div'); holder.id = 'player' + i; holder.style.height = '100%'; document.querySelectorAll('.video')[i].replaceChildren(holder); status(i, '読み込み中...'); players[i] = new YT.Player(holder.id, { height: '100%', width: '100%', videoId: id, playerVars: { playsinline: 1, rel: 0 }, events: { onReady: e => { ready[i] = true; e.target.setVolume(Number(document.getElementById('volume' + i).value)); status(i, '準備完了。再生できます。') }, onError: e => status(i, '再生エラー: ' + e.data + '（埋め込み不可の動画の可能性があります）'), onStateChange: e => { if (e.data === YT.PlayerState.PLAYING) status(i, '再生中'); if (e.data === YT.PlayerState.PAUSED) status(i, '一時停止') } } }) }
-        for (let i = 0; i < 2; i++) { document.getElementById('load' + i).onclick = () => load(i); document.getElementById('paste' + i).onclick = async () => { try { if (!navigator.clipboard?.readText) { status(i, 'クリップボードを読み取れません。HTTPSで開いてください。'); return } const value = (await navigator.clipboard.readText()).trim(); if (!value) { status(i, 'クリップボードが空です。'); return } document.getElementById('url' + i).value = value; load(i) } catch (err) { status(i, 'クリップボードの読み取りが許可されませんでした。URL欄に手動で貼り付けてください。') } }; document.getElementById('volume' + i).oninput = e => { document.getElementById('vlabel' + i).textContent = e.target.value + '%'; if (ready[i]) players[i].setVolume(Number(e.target.value)) } }
+  <main id="panels"></main>
+  <script>
+    if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(console.warn));
+    const players = [null, null], ready = [false, false];
+    function videoId(value) { try { const u = new URL(value); const host = u.hostname.toLowerCase(); if (host === 'youtu.be' || host === 'www.youtu.be') return u.pathname.split('/')[1] || ''; if (['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'www.youtube-nocookie.com'].includes(host)) { if (u.pathname === '/watch') return u.searchParams.get('v') || ''; const m = u.pathname.match(/^\/(?:shorts|live|embed)\/([^/]+)/); return m?.[1] || '' } } catch (e) { } return /^[\w-]{11}$/.test(value) ? value : '' }
+    const root = document.getElementById('panels');
+    for (let i = 0; i < 2; i++) { const section = document.createElement('section'); section.className = 'panel'; section.innerHTML = `<h2 class="panel-title">動画 ${i + 1}</h2><div class="video"><div id="player${i}" style="height:100%"></div></div><div class="controls"><label for="volume${i}">音量</label><input id="volume${i}" type="range" min="0" max="100" value="${i === 0 ? 70 : 30}"><span id="vlabel${i}">${i === 0 ? 70 : 30}%</span></div><div class="url-row"><input id="url${i}" type="text" aria-label="動画 ${i + 1} のURL" placeholder="YouTube URL / 動画ID"/><button id="load${i}">読み込む</button><button class="secondary" id="paste${i}">貼り付けて読み込む</button></div><p class="status" id="status${i}">未読み込み</p>`; root.append(section) }
+    function status(i, msg) { document.getElementById('status' + i).textContent = msg }
+    const script = document.createElement('script'); script.src = 'https://www.youtube.com/iframe_api'; document.head.append(script);
+    function load(i) { const id = videoId(document.getElementById('url' + i).value.trim()); if (!/^[\w-]{11}$/.test(id)) { status(i, '正しいYouTube URLまたは動画IDを入力してください。'); return } if (!window.YT?.Player) { status(i, 'YouTube APIを読み込み中です。少し待って再試行してください。'); return } if (players[i]) { players[i].destroy(); players[i] = null } ready[i] = false; const holder = document.createElement('div'); holder.id = 'player' + i; holder.style.height = '100%'; document.querySelectorAll('.video')[i].replaceChildren(holder); status(i, '読み込み中...'); players[i] = new YT.Player(holder.id, { height: '100%', width: '100%', videoId: id, playerVars: { playsinline: 1, rel: 0 }, events: { onReady: e => { ready[i] = true; e.target.setVolume(Number(document.getElementById('volume' + i).value)); status(i, '準備完了。再生できます。') }, onError: e => status(i, '再生エラー: ' + e.data + '（埋め込み不可の動画の可能性があります）'), onStateChange: e => { if (e.data === YT.PlayerState.PLAYING) status(i, '再生中'); if (e.data === YT.PlayerState.PAUSED) status(i, '一時停止') } } }) }
+    for (let i = 0; i < 2; i++) { document.getElementById('load' + i).onclick = () => load(i); document.getElementById('paste' + i).onclick = async () => { try { if (!navigator.clipboard?.readText) { status(i, 'クリップボードを読み取れません。HTTPSで開いてください。'); return } const value = (await navigator.clipboard.readText()).trim(); if (!value) { status(i, 'クリップボードが空です。'); return } document.getElementById('url' + i).value = value; load(i) } catch (err) { status(i, 'クリップボードの読み取りが許可されませんでした。URL欄に手動で貼り付けてください。') } }; document.getElementById('volume' + i).oninput = e => { document.getElementById('vlabel' + i).textContent = e.target.value + '%'; if (ready[i]) players[i].setVolume(Number(e.target.value)) } }
 
-    </script>
+  </script>
 </body>
 
 </html>
